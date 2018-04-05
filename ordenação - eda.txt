@@ -1,0 +1,244 @@
+/// Insertion, Bubble, Selection, Merge, Counting, Heap, Quick, Radix
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int insertion(int *vetor, int n){
+	int i, j;
+	for(i=0;i<n;i++){
+		for(j=i+1;j<n;j++){
+		 	if (vetor[i]>vetor[j]){
+			 int aux=vetor[i];
+			 vetor[i]=vetor[j];
+			 vetor[j]=aux;
+			}
+		}
+	}
+return *vetor;
+}
+
+int selection(int *vetor, int n){
+	int i,j;
+	for(i=0;i<n;i++){
+		for(j=i+1;j<n;j++){
+	
+	if(vetor[j]<vetor[i]){
+		int aux = vetor[i];
+		vetor[i]= vetor[j];
+		vetor[j]=aux;
+	} 
+}
+}
+	return *vetor;
+}
+
+int bubble(int *vetor, int n){
+	int i=n-1,j;
+	while(i!=0){
+		for(j=0;j<i;j++){
+		 	if (vetor[j]>=vetor[j+1]){
+			 int aux=vetor[j];
+			 vetor[j]=vetor[j+1];
+			 vetor[j+1]=aux;
+			 }
+			if(j==i-1){
+				if (vetor[i]<=vetor[j]){
+			 		int aux=vetor[i];
+			 		vetor[i]=vetor[j];
+			 		vetor[j]=aux;
+				 }
+			  }
+		}
+	i--;
+	}
+	return *vetor;
+}
+
+int counting(int *vetor, int n){
+    int qaux,i,j;
+    
+    for (i=1;i<n;i++){
+    if(vetor[i-1]<=vetor[i]) {
+		if(vetor[i]>qaux) qaux = vetor[i];
+		else qaux = qaux;
+    }else{
+		if(vetor[i-1]> qaux) qaux=vetor[i-1];
+		else qaux = qaux;
+    }
+    }
+    int vetaux[qaux+1];
+    for (j=0; j<=qaux; j++){
+        vetaux[j]= 0;
+    }
+    
+    for (i=0;i<n; i++){
+        int q=vetor[i];
+        vetaux[q]= vetaux[q]+ 1;
+    }
+    j=0;
+         for (i=0; i<=qaux; i++){    
+            while(vetaux[i]!=0){
+                vetor[j]= i;
+                j++;
+                vetaux[i]= vetaux[i]-1;
+            }
+        
+    }
+    return *vetor;
+}
+
+void createHeap(int *vetor, int inicio, int final){
+    int pai = vetor[inicio], j= 2*inicio+1;
+    while(j<=final){
+        if(j<final){
+            if(vetor[j]<vetor[j+1]) j++;
+        }
+        if(pai<vetor[j]){
+            vetor[inicio] = vetor[j];
+            inicio=j;
+            j= 2*inicio +1;
+        }
+        else j=final+1;
+    }
+    vetor[inicio]=pai;
+}
+
+int heap(int *vetor, int n){
+    int i, meio;  
+    meio=(n-1)/2;       
+  for(i=meio; i>=0; i--)  createHeap(vetor, i, n-1);
+    int aux;
+	for (i=n-1;i>=1; i--){  
+        aux=vetor[0];
+        vetor[0]=vetor[i];
+        vetor[i]=aux;
+        createHeap(vetor, 0, i-1);
+    }
+    return *vetor;
+  }
+  
+int particaoQuick(int *vetor, int inicio, int final){
+    int pivo, aux, i, j;
+    i = inicio;
+    j = final-1;
+    pivo = vetor[inicio];
+    while(i<j)  {
+        while (vetor[j]>pivo)  j--;
+        while (vetor[i]<=pivo)  i++;
+    if (i<j){
+    aux = vetor[i];
+    vetor[i]= vetor[j];
+    vetor[j]= aux;
+   }
+    }
+	vetor[inicio] = vetor[j];
+	vetor[j] = pivo;
+	return j;    
+    }
+
+int quick(int *vetor, int inicio, int final){
+    int pivo;
+    if(final>inicio){
+    pivo = particaoQuick(vetor, inicio, final); 
+    quick(vetor, inicio, pivo);
+    quick(vetor, pivo+1, final);
+    }
+    }
+
+// merge é o unico que tem que começar na posição 1 for(i=1;i<=n;i++); na main  
+void merge(int *vetor, int posicaoInicio, int posicaoFim) {
+    int i, j, k, metadeTamanho, *vetorTemp;
+
+    if(posicaoInicio == posicaoFim) return;
+
+    // ordenacao recursiva das duas metades
+    metadeTamanho = (posicaoInicio + posicaoFim ) / 2;
+    merge(vetor, posicaoInicio, metadeTamanho);
+    merge(vetor, metadeTamanho + 1, posicaoFim);
+
+    // intercalacao no vetor temporario t
+    i = posicaoInicio;
+    j = metadeTamanho + 1;
+    k = 0;
+    vetorTemp = (int *) malloc(sizeof(int) * (posicaoFim - posicaoInicio + 1));
+
+    while(i < metadeTamanho + 1 || j  < posicaoFim + 1) {
+        if (i == metadeTamanho + 1 ) { // i passou do final da primeira metade, pegar v[j]
+            vetorTemp[k] = vetor[j];
+            j++;
+            k++;
+        }
+        else {
+            if (j == posicaoFim + 1) { // j passou do final da segunda metade, pegar v[i]
+                vetorTemp[k] = vetor[i];
+                i++;
+                k++;
+            }
+            else {
+                if (vetor[i] < vetor[j]) {
+                    vetorTemp[k] = vetor[i];
+                    i++;
+                    k++;
+                }
+                else {
+                    vetorTemp[k] = vetor[j];
+                    j++;
+                    k++;
+                }
+            }
+        }
+
+    }
+    // copia vetor intercalado para o vetor original
+    for(i = posicaoInicio; i <= posicaoFim; i++) {
+        vetor[i] = vetorTemp[i - posicaoInicio];
+    }
+    free(vetorTemp);
+}
+ 
+void radix(int *vetor, int tamanho) {
+    int i;
+    int *b;
+    int maior = vetor[0];
+    int exp = 1;
+
+    b = (int *)calloc(tamanho, sizeof(int));
+
+    for (i = 0; i < tamanho; i++) {
+        if (vetor[i] > maior)
+    	    maior = vetor[i];
+    }
+ 
+    while (maior/exp > 0) {
+        int bucket[10] = { 0 };
+    	for (i = 0; i < tamanho; i++)
+    	    bucket[(vetor[i] / exp) % 10]++; 
+    	for (i = 1; i < 10; i++)
+    	    bucket[i] += bucket[i - 1];
+    	for (i = tamanho - 1; i >= 0; i--)
+    	    b[--bucket[(vetor[i] / exp) % 10]] = vetor[i];
+    	for (i = 0; i < tamanho; i++)
+    	    vetor[i] = b[i];
+    	exp *= 10;
+    }
+
+    free(b);
+}
+  
+int main(){
+    
+    int n;
+    
+    scanf("%d", &n);
+    
+    while(n == 0) exit(0);
+    
+    while (n>300000) exit(0);
+    
+    int vetor[n], i;
+    
+    for(i=1;i<=n;i++) scanf("%d", &vetor[i]);
+      /// chama a função de ordenação
+    for(i=1;i<=n;i++) printf("%d ", vetor[i]);
+       
+    }
